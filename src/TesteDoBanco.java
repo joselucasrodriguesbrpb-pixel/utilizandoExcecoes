@@ -1,4 +1,4 @@
-import domain.banco.BancoService;
+import service.BancoService;
 import domain.usuario.User;
 import repositorio.UserRepository;
 
@@ -15,7 +15,7 @@ public class TesteDoBanco {
         Scanner scanner = new Scanner(System.in);
 
         try {
-            // Contas pré-cadastradas para testes e transferências
+            // Contas para testes
             User u1 = banco.cadastrar("1001", "1234", LocalDate.parse("15/05/2000", FORMATTER));
             User u2 = banco.cadastrar("1002", "4321", LocalDate.parse("20/08/2001", FORMATTER));
 

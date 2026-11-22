@@ -1,7 +1,8 @@
-package domain.banco;
+package service;
 
-import domain.usuario.SaldoUsuario;
+import domain.banco.ServicoFinanceiro;
 import domain.usuario.User;
+import domain.usuario.UserSaldo;
 import exception.*;
 import repositorio.UserRepository;
 
@@ -58,13 +59,13 @@ public class BancoService implements ServicoFinanceiro {
         }
 
         String idTx = UUID.randomUUID().toString().substring(0, 8);
-        SaldoUsuario debito = new SaldoUsuario(idTx, remetente.getIdConta(), "TRANSFERENCIA_ENVIADA", -valor);
-        SaldoUsuario credito = new SaldoUsuario(idTx, destinatario.getIdConta(), "TRANSFERENCIA_RECEBIDA", valor);
+        UserSaldo debito = new UserSaldo(idTx, remetente.getIdConta(), "TRANSFERENCIA_ENVIADA", -valor);
+        UserSaldo credito = new UserSaldo(idTx, destinatario.getIdConta(), "TRANSFERENCIA_RECEBIDA", valor);
 
-        repository.getSaldoUsuario().add(debito);
+        repository.getUserSaldo().add(debito);
         repository.getExtrato().add(debito);
 
-        repository.getSaldoUsuario().add(credito);
+        repository.getUserSaldo().add(credito);
         repository.getExtrato().add(credito);
     }
 
@@ -75,7 +76,7 @@ public class BancoService implements ServicoFinanceiro {
         }
 
         StringBuilder sb = new StringBuilder("=== Extrato da Conta: " + idConta + " ===\n");
-        for (SaldoUsuario mov : repository.getExtrato()) {
+        for (UserSaldo mov : repository.getExtrato()) {
             if (mov.getIdConta().equals(idConta)) {
                 sb.append(mov.toString()).append("\n");
             }
@@ -86,9 +87,9 @@ public class BancoService implements ServicoFinanceiro {
 
     @Override
     public void estornarTransacao(String idTransacao) throws PrazoEstornoExpiradoException {
-        List<SaldoUsuario> movimentacoesAlvo = new ArrayList<>();
+        List<UserSaldo> movimentacoesAlvo = new ArrayList<>();
 
-        for (SaldoUsuario mov : repository.getExtrato()) {
+        for (UserSaldo mov : repository.getExtrato()) {
             if (mov.getIdTransacao().equals(idTransacao)) {
                 long horasPassadas = Duration.between(mov.getDataHora(), LocalDateTime.now()).toHours();
                 if (horasPassadas > 24) {
@@ -98,14 +99,14 @@ public class BancoService implements ServicoFinanceiro {
             }
         }
 
-        for (SaldoUsuario mov : movimentacoesAlvo) {
-            SaldoUsuario estorno = new SaldoUsuario(
+        for (UserSaldo mov : movimentacoesAlvo) {
+            UserSaldo estorno = new UserSaldo(
                     UUID.randomUUID().toString().substring(0, 8),
                     mov.getIdConta(),
                     "ESTORNO_" + mov.getTipo(),
                     -mov.getValorSaldo()
             );
-            repository.getSaldoUsuario().add(estorno);
+            repository.getUserSaldo().add(estorno);
             repository.getExtrato().add(estorno);
         }
     }

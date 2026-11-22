@@ -1,7 +1,7 @@
 package repositorio;
 
 import banco_de_dados_temporario.ArmazenamentoDeUsuario;
-import domain.usuario.SaldoUsuario;
+import domain.usuario.UserSaldo;
 import exception.SaldoInsuficienteException;
 
 import java.util.ArrayList;
@@ -10,13 +10,13 @@ import java.util.UUID;
 
 public class UserRepository implements ArmazenamentoDeUsuario {
 
-    private List<SaldoUsuario> extrato = new ArrayList<>();
-    private List<SaldoUsuario> saldoUsuario = new ArrayList<>();
+    private List<UserSaldo> extrato = new ArrayList<>();
+    private List<UserSaldo> saldoUsuario = new ArrayList<>();
     private String contaAtiva;
 
     public UserRepository() {}
 
-    public UserRepository(List<SaldoUsuario> extrato, List<SaldoUsuario> saldoUsuario) {
+    public UserRepository(List<UserSaldo> extrato, List<UserSaldo> saldoUsuario) {
         this.extrato = extrato;
         this.saldoUsuario = saldoUsuario;
     }
@@ -28,7 +28,7 @@ public class UserRepository implements ArmazenamentoDeUsuario {
     @Override
     public double visualizarSaldo(String idConta) {
         double saldo = 0;
-        for (SaldoUsuario item : saldoUsuario) {
+        for (UserSaldo item : saldoUsuario) {
             if (item.getIdConta().equals(idConta)) {
                 saldo += item.getValorSaldo();
             }
@@ -47,7 +47,7 @@ public class UserRepository implements ArmazenamentoDeUsuario {
         }
 
         String idTx = UUID.randomUUID().toString().substring(0, 8);
-        SaldoUsuario movimentacao = new SaldoUsuario(idTx, contaAtiva, "SAQUE", -valor);
+        UserSaldo movimentacao = new UserSaldo(idTx, contaAtiva, "SAQUE", -valor);
         saldoUsuario.add(movimentacao);
         extrato.add(movimentacao);
 
@@ -61,18 +61,18 @@ public class UserRepository implements ArmazenamentoDeUsuario {
         }
 
         String idTx = UUID.randomUUID().toString().substring(0, 8);
-        SaldoUsuario movimentacao = new SaldoUsuario(idTx, contaAtiva, "DEPOSITO", valor);
+        UserSaldo movimentacao = new UserSaldo(idTx, contaAtiva, "DEPOSITO", valor);
         saldoUsuario.add(movimentacao);
         extrato.add(movimentacao);
 
         return visualizarSaldo(contaAtiva);
     }
 
-    public List<SaldoUsuario> getExtrato() {
+    public List<UserSaldo> getExtrato() {
         return extrato;
     }
 
-    public List<SaldoUsuario> getSaldoUsuario() {
+    public List<UserSaldo> getUserSaldo() {
         return saldoUsuario;
     }
 }
